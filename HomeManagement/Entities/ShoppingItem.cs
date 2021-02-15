@@ -12,6 +12,7 @@ namespace HomeManagement.Entities
         public string Section { get; set; }
         public int Amount { get; set; }
         public int Priority { get; set; }
+        public bool IsBought { get; set; }
         public bool IsFavourite { get; set; }
         public bool IsDeleted { get; set; }
     }

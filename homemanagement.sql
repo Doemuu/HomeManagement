@@ -14,6 +14,7 @@ Create table ShoppingList (
     Section varchar(255) not null,
     Amount int not null,
     Priority int not null,
+    IsBought tinyint not null,
     IsFavourite tinyint not null,
     IsDeleted tinyint not null,
     Primary Key (Id)

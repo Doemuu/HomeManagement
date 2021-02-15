@@ -22,7 +22,7 @@ namespace HomeManagement.Connector.Database
             {
                 try
                 {
-                    var result = await sql.QueryAsync<ShoppingItem>("SELECT * FROM ShoppingList");
+                    var result = await sql.QueryAsync<ShoppingItem>("SELECT * FROM ShoppingList WHERE IsDeleted = false");
                     return result.ToList();
                 }
                 catch (Exception ex)
@@ -79,6 +79,75 @@ namespace HomeManagement.Connector.Database
                 catch (Exception ex)
                 {
                     return null;
+                }
+            }
+        }
+
+        public async Task<ShoppingItem> GetShoppingItemById(int id)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.QueryFirstAsync<ShoppingItem>("SELECT * FROM ShoppingList WHERE Id = @Id", new { Id = id });
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<ConnectorResult> AddShoppingItem(ShoppingItem item)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.ExecuteAsync("INSERT INTO ShoppingList (ItemName, Section, Amount, Priority, IsBought, IsFavourite, IsDeleted) " +
+                        "VALUES (@ItemName, @Section, @Amount, @Priority, @IsBought, @IsFavourite, @IsDeleted)",
+                        new
+                        {
+                            ItemName = item.ItemName,
+                            Section = item.Section,
+                            Priority = item.Priority,
+                            IsBought = item.IsBought,
+                            IsFavourite = item.IsFavourite,
+                            IsDeleted = item.IsDeleted
+                        });
+                    return new ConnectorResult { Success = true };
+                }
+                catch (Exception ex)
+                {
+                    return new ConnectorResult { Success = false, Exception = ex.Message };
+                }
+            }
+        }
+
+        public async Task<ConnectorResult> EditShoppingItem(int id, ShoppingItem item)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.ExecuteAsync("UPDATE ShoppingList SET ItemName = @ItemName, " +
+                        "Section = @Section, Amount = @Amount, Priority = @Priority, IsBought = @IsBought, IsFavourite = @IsFavourite, IsDeleted = @IsDeleted",
+                        new
+                        {
+                            ItemName = item.ItemName,
+                            Section = item.Section,
+                            Amount = item.Amount,
+                            Priority = item.Priority,
+                            IsBought = item.IsBought,
+                            IsFavourite = item.IsFavourite,
+                            IsDeleted = item.IsDeleted
+                        });
+                    return new ConnectorResult { Success = true };
+                }
+                catch (Exception ex)
+                {
+                    return new ConnectorResult { Success = false, Exception = ex.Message };
                 }
             }
         }
