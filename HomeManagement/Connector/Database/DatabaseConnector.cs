@@ -152,23 +152,6 @@ namespace HomeManagement.Connector.Database
             }
         }
 
-        public async Task<User> AuthenticateUser(AuthenticationRequest user)
-        {
-            using (var sql = GetSqlConnection())
-            {
-                try
-                {
-                    var result = await sql.QueryFirstOrDefaultAsync<User>("SELECT * FROM User WHERE UserName = @UserName AND Password = @Password",
-                        new { UserName = user.Username, Password = user.Password });
-                    return result;
-                }
-                catch (Exception ex)
-                {
-                    return null;
-                }
-            }
-        }
-
         public async Task<ConnectorResult> AddRefreshToken(RefreshToken token, User user)
         {
             using (var sql = GetSqlConnection())

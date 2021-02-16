@@ -32,10 +32,12 @@ namespace HomeManagement.Services
             if (user == null)
                 return null;
 
-            var authenticatedUser = await _databaseConnector.AuthenticateUser(model);
+            bool verify = BCrypt.Net.BCrypt.Verify(model.Password, user.Password);
+            if (!verify)
+                return null;
 
             // authentication successful so generate jwt and refresh tokens
-            var jwtToken = generateJwtToken(authenticatedUser);
+            var jwtToken = generateJwtToken(user);
             var refreshToken = generateRefreshToken(ipAddress);
 
             // save refresh token
