@@ -35,6 +35,7 @@ Create table RefreshToken (
     ExpiresOn datetime not null,
     CreatedAt datetime not null,
     UpdatedAt datetime not null,
+    CreatedById varchar(255) not null,
     Primary Key (Id),
     foreign key (UserId) References User(Id)
 );

@@ -14,5 +14,6 @@ namespace HomeManagement.Entities
         public bool IsRevoked { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public string CreatedByIp { get; set; }
     }
 }
