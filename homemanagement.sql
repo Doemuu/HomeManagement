@@ -19,3 +19,22 @@ Create table ShoppingList (
     IsDeleted tinyint not null,
     Primary Key (Id)
 );
+Create table User (
+	Id int not null auto_increment,
+    FirstName varchar(255) not null,
+    LastName varchar(255) not null,
+    UserName varchar(255) not null,
+    Password varchar(255) not null,
+    Primary Key (Id)
+);
+Create table RefreshToken (
+	Id int not null auto_increment,
+    UserId int not null,
+    Token varchar(255) not null,
+    IsRevoked tinyint not null,
+    ExpiresOn datetime not null,
+    CreatedAt datetime not null,
+    UpdatedAt datetime not null,
+    Primary Key (Id),
+    foreign key (UserId) References User(Id)
+);
