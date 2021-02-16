@@ -160,8 +160,16 @@ namespace HomeManagement.Connector.Database
                 {
                     var result = await sql.ExecuteAsync("INSERT INTO RefreshToken (UserId, Token, IsRevoked, ExpiresOn, CreatedAt, UpdatedAt, CreatedById) VALUES " +
                         "(@UserId, @Token, @IsRevoked, @ExpiresOn, @CreatedAt, @UpdatedAt, @CreatedById)",
-                        new { UserId = user.Id, Token = token.Token, IsRevoked = token.IsRevoked, ExpiresOn = token.ExpiresOn, 
-                            CreatedAt = token.CreatedAt, UpdatedAt = token.UpdatedAt, CreatedById = token.CreatedByIp });
+                        new
+                        {
+                            UserId = user.Id,
+                            Token = token.Token,
+                            IsRevoked = token.IsRevoked,
+                            ExpiresOn = token.ExpiresOn,
+                            CreatedAt = token.CreatedAt,
+                            UpdatedAt = token.UpdatedAt,
+                            CreatedById = token.CreatedByIp
+                        });
                     return new ConnectorResult { Success = true };
                 }
                 catch (Exception ex)
@@ -183,6 +191,56 @@ namespace HomeManagement.Connector.Database
                 catch (Exception ex)
                 {
                     return null;
+                }
+            }
+        }
+
+        public async Task<ConnectorResult> RegisterUser(User user)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.ExecuteAsync("INSERT INTO User (FirstName, LastName, UserName, UserPassword) VALUES (@FirstName, @LastName, @UserName, @UserPassword)",
+                        new { FirstName = user.FirstName, LastName = user.LastName, UserName = user.UserName, UserPassword = user.UserPassword });
+                    return new ConnectorResult { Success = true };
+                }
+                catch (Exception ex)
+                {
+                    return new ConnectorResult { Success = false, Exception = ex.Message };
+                }
+            }
+        }
+
+        public async Task<ConnectorResult> EditPassword(string username, string password)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.ExecuteAsync("UPDATE User SET UserPassword = @UserPassword WHERE UserName = @UserName", new { UserPassword = password, UserName = username });
+                    return new ConnectorResult { Success = true };
+                }
+                catch (Exception ex)
+                {
+                    return new ConnectorResult { Success = false, Exception = ex.Message };
+                }
+            }
+        }
+
+        public async Task<ConnectorResult> EditUserData(string username, User user)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.ExecuteAsync("UPDATE User SET FirstName = @FirstName, LastName = @LastName, UserName = @UserName",
+                        new { FirstName = user.FirstName, LastName = user.LastName, UserName = user.UserName });
+                    return new ConnectorResult { Success = true };
+                }
+                catch (Exception ex)
+                {
+                    return new ConnectorResult { Success = false, Exception = ex.Message };
                 }
             }
         }

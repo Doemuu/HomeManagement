@@ -1,4 +1,5 @@
-﻿using HomeManagement.Services;
+﻿using HomeManagement.Entities;
+using HomeManagement.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,43 @@ namespace HomeManagement.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Login()
+        [HttpPost]
+        public async Task<IActionResult> Register([FromBody] User user)
         {
-            return Ok();
+            var result = await _userService.RegisterUser(user);
+            if (!result.Success)
+                return BadRequest(result.Exception);
+
+            return Json(result);
+        }
+        [HttpGet("{username}")]
+        public async Task<IActionResult> GetUserData(string username)
+        {
+            var result = await _userService.GetUserByUserName(username);
+            if (result == null)
+                return BadRequest("inexistent_user");
+
+            return Json(result);
+        }
+
+        [HttpPut("/password")]
+        public async Task<IActionResult> ChangePassword([FromBody] User user)
+        {
+            var result = await _userService.ChangePassword(user.UserName, user.UserPassword);
+            if (!result.Success)
+                return BadRequest(result.Exception);
+
+            return Json(result);
+        }
+
+        [HttpPut("/userdata")]
+        public async Task<IActionResult> EditUserData([FromBody] User user)
+        {
+            var result = await _userService.EditUserData(user);
+            if (!result.Success)
+                return BadRequest(result.Exception);
+
+            return Json(result);
         }
     }
 }

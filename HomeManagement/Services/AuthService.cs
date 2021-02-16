@@ -32,7 +32,7 @@ namespace HomeManagement.Services
             if (user == null)
                 return null;
 
-            bool verify = BCrypt.Net.BCrypt.Verify(model.Password, user.Password);
+            bool verify = BCrypt.Net.BCrypt.Verify(model.Password, user.UserPassword);
             if (!verify)
                 return null;
 

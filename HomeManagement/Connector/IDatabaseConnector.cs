@@ -18,5 +18,8 @@ namespace HomeManagement.Connector
         public Task<Note> GetNoteById(int id);
         public Task<User> GetUserByUserName(string UserName);
         public Task<ConnectorResult> AddRefreshToken(RefreshToken token, User user);
+        public Task<ConnectorResult> RegisterUser(User user);
+        public Task<ConnectorResult> EditPassword(string username, string password);
+        public Task<ConnectorResult> EditUserData(string username, User user);
     }
 }
