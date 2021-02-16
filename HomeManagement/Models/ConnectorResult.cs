@@ -9,5 +9,6 @@ namespace HomeManagement.Models
     {
         public bool Success { get; set; }
         public string Exception { get; set; }
+        public int LastId { get; set; }
     }
 }

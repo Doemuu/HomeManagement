@@ -38,20 +38,20 @@ namespace HomeManagement.Services
 
             // authentication successful so generate jwt and refresh tokens
             var jwtToken = generateJwtToken(user);
-            var refreshToken = generateRefreshToken();
+            var refreshToken = generateRefreshToken(user).Result;
 
             // save refresh token
-            await _databaseConnector.AddRefreshToken(refreshToken, user);
+            await _databaseConnector.SaveRefreshToken(new RefreshToken { Token = refreshToken, IsRevoked = false, CreatedAt = DateTime.UtcNow});
 
-            return new AuthenticationResponse(user, jwtToken, refreshToken.Token);
+            return new AuthenticationResponse(user, jwtToken, refreshToken);
         }
 
-        public AuthenticationResponse RefreshToken(string token, string ipAddress)
+        public AuthenticationResponse RefreshToken(string token)
         {
             throw new NotImplementedException();
         }
 
-        public bool RevokeToken(string token, string ipAddress)
+        public bool RevokeToken(string token)
         {
             throw new NotImplementedException();
         }
@@ -73,19 +73,27 @@ namespace HomeManagement.Services
             return tokenHandler.WriteToken(token);
         }
 
-        private RefreshToken generateRefreshToken()
+        private async Task<string> generateRefreshToken(User user)
         {
-            using (var rngCryptoServiceProvider = new RNGCryptoServiceProvider())
+            var result = await _databaseConnector.GenerateRefreshToken(new RefreshToken { UserId = user.Id, ExpiresOn = DateTime.UtcNow});
+            if (!result.Success)
+                return result.Exception;
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                var randomBytes = new byte[64];
-                rngCryptoServiceProvider.GetBytes(randomBytes);
-                return new RefreshToken
+                Subject = new ClaimsIdentity(new Claim[]
                 {
-                    Token = Convert.ToBase64String(randomBytes),
-                    ExpiresOn = DateTime.UtcNow.AddDays(7),
-                    CreatedAt = DateTime.UtcNow
-                };
-            }
+                    new Claim(ClaimTypes.Name, result.LastId.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwtToken = tokenHandler.WriteToken(token);
+
+            return jwtToken;
         }
     }
 }

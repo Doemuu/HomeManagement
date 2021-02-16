@@ -30,11 +30,11 @@ Create table User (
 Create table RefreshToken (
 	Id int not null auto_increment,
     UserId int not null,
-    Token varchar(255) not null,
-    IsRevoked tinyint not null,
+    Token varchar(255),
+    IsRevoked tinyint,
     ExpiresOn datetime not null,
-    CreatedAt datetime not null,
-    UpdatedAt datetime not null,
+    CreatedAt datetime,
+    UpdatedAt datetime,
     Primary Key (Id),
     foreign key (UserId) References User(Id)
 );

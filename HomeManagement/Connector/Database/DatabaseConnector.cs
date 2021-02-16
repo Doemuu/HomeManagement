@@ -152,20 +152,17 @@ namespace HomeManagement.Connector.Database
             }
         }
 
-        public async Task<ConnectorResult> AddRefreshToken(RefreshToken token, User user)
+        public async Task<ConnectorResult> SaveRefreshToken(RefreshToken token)
         {
             using (var sql = GetSqlConnection())
             {
                 try
                 {
-                    var result = await sql.ExecuteAsync("INSERT INTO RefreshToken (UserId, Token, IsRevoked, ExpiresOn, CreatedAt, UpdatedAt, CreatedById) VALUES " +
-                        "(@UserId, @Token, @IsRevoked, @ExpiresOn, @CreatedAt, @UpdatedAt, @CreatedById)",
+                    var result = await sql.ExecuteAsync("UPDATE RefreshToken SET Token = @Token, IsRevoked = @IsRevoked, CreatedAt = @CreatedAt, UpdatedAt = @UpdatedAt",
                         new
                         {
-                            UserId = user.Id,
                             Token = token.Token,
                             IsRevoked = token.IsRevoked,
-                            ExpiresOn = token.ExpiresOn,
                             CreatedAt = token.CreatedAt,
                             UpdatedAt = token.UpdatedAt
                         });
@@ -240,6 +237,41 @@ namespace HomeManagement.Connector.Database
                 catch (Exception ex)
                 {
                     return new ConnectorResult { Success = false, Exception = ex.Message };
+                }
+            }
+        }
+
+        public async Task<ConnectorResult> GenerateRefreshToken(RefreshToken token)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.QuerySingleAsync<int>("INSERT INTO RefreshToken (UserId, ExpiresOn) VALUES" +
+                        " (@UserId @ExpiresOn)", 
+                        new { UserId = token.UserId, ExpiresOn = token.ExpiresOn});
+
+                    return new ConnectorResult { Success = true, LastId = result };
+                }
+                catch (Exception ex)
+                {
+                    return new ConnectorResult { Success = false, Exception = ex.Message };
+                }
+            }
+        }
+
+        public async Task<RefreshToken> GetTokenByToken(string token)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.QuerySingleOrDefaultAsync<RefreshToken>("SELECT * FROM RefreshToken WHERE Token = @Token", new { Token = token});
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    return null;
                 }
             }
         }
