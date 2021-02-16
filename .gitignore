@@ -353,5 +353,5 @@ MigrationBackup/
 .ionide/
 
 #Appsettings and Secret
-HomeManagement/appsettings.*.json
+HomeManagement/appsettings*.json
 !HomeManagement/appsettings.example.json
