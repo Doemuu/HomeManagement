@@ -355,3 +355,6 @@ MigrationBackup/
 #Appsettings and Secret
 HomeManagement/appsettings*.json
 !HomeManagement/appsettings.example.json
+
+#Launchsettings and ConnectionString
+HomeManagement/Properties/launchSettings.json
