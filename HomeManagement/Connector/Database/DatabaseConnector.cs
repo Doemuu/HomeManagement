@@ -151,5 +151,57 @@ namespace HomeManagement.Connector.Database
                 }
             }
         }
+
+        public async Task<User> AuthenticateUser(AuthenticationRequest user)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.QueryFirstOrDefaultAsync<User>("SELECT * FROM User WHERE UserName = @UserName AND Password = @Password",
+                        new { UserName = user.Username, Password = user.Password });
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<ConnectorResult> AddRefreshToken(RefreshToken token, User user)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.ExecuteAsync("INSERT INTO RefreshToken (UserId, Token, IsRevoked, ExpiresOn, CreatedAt, UpdatedAt, CreatedById) VALUES " +
+                        "(@UserId, @Token, @IsRevoked, @ExpiresOn, @CreatedAt, @UpdatedAt, @CreatedById)",
+                        new { UserId = user.Id, Token = token.Token, IsRevoked = token.IsRevoked, ExpiresOn = token.ExpiresOn, 
+                            CreatedAt = token.CreatedAt, UpdatedAt = token.UpdatedAt, CreatedById = token.CreatedByIp });
+                    return new ConnectorResult { Success = true };
+                }
+                catch (Exception ex)
+                {
+                    return new ConnectorResult { Success = false, Exception = ex.Message };
+                }
+            }
+        }
+
+        public async Task<User> GetUserByUserName(string UserName)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.QueryFirstOrDefaultAsync<User>("SELECT * FROM User WHERE UserName = @UserName", new { UserName = UserName });
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+        }
     }
 }
