@@ -8,8 +8,8 @@ namespace HomeManagement.Services
 {
     public interface IAuthService
     {
-        public Task<AuthenticationResponse> Authenticate(AuthenticationRequest model, string ipAddress);
-        public AuthenticationResponse RefreshToken(string token, string ipAddress);
-        public bool RevokeToken(string token, string ipAddress);
+        public Task<AuthenticationResponse> Authenticate(AuthenticationRequest model);
+        public AuthenticationResponse RefreshToken(string token);
+        public bool RevokeToken(string token);
     }
 }

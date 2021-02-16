@@ -167,8 +167,7 @@ namespace HomeManagement.Connector.Database
                             IsRevoked = token.IsRevoked,
                             ExpiresOn = token.ExpiresOn,
                             CreatedAt = token.CreatedAt,
-                            UpdatedAt = token.UpdatedAt,
-                            CreatedById = token.CreatedByIp
+                            UpdatedAt = token.UpdatedAt
                         });
                     return new ConnectorResult { Success = true };
                 }

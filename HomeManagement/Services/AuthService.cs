@@ -25,7 +25,7 @@ namespace HomeManagement.Services
             _databaseConnector = databaseConnector;
         }
 
-        public async Task<AuthenticationResponse> Authenticate(AuthenticationRequest model, string ipAddress)
+        public async Task<AuthenticationResponse> Authenticate(AuthenticationRequest model)
         {
             var user = await _databaseConnector.GetUserByUserName(model.Username);
             // return null if user not found
@@ -38,7 +38,7 @@ namespace HomeManagement.Services
 
             // authentication successful so generate jwt and refresh tokens
             var jwtToken = generateJwtToken(user);
-            var refreshToken = generateRefreshToken(ipAddress);
+            var refreshToken = generateRefreshToken();
 
             // save refresh token
             await _databaseConnector.AddRefreshToken(refreshToken, user);
@@ -73,7 +73,7 @@ namespace HomeManagement.Services
             return tokenHandler.WriteToken(token);
         }
 
-        private RefreshToken generateRefreshToken(string ipAddress)
+        private RefreshToken generateRefreshToken()
         {
             using (var rngCryptoServiceProvider = new RNGCryptoServiceProvider())
             {
@@ -83,8 +83,7 @@ namespace HomeManagement.Services
                 {
                     Token = Convert.ToBase64String(randomBytes),
                     ExpiresOn = DateTime.UtcNow.AddDays(7),
-                    CreatedAt = DateTime.UtcNow,
-                    CreatedByIp = ipAddress
+                    CreatedAt = DateTime.UtcNow
                 };
             }
         }
