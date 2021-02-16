@@ -64,13 +64,13 @@ namespace HomeManagement
 
             services.AddTransient<IDatabaseConnector, DatabaseConnector>();
 
+            services.AddTransient<IAuthService, AuthService>();
+
             services.AddTransient<ShoppingService>();
 
             services.AddTransient<NotesService>();
 
             services.AddTransient<UserService>();
-
-            services.AddTransient<AuthService>();
 
             services.AddSwaggerGen(swagger =>
             {
