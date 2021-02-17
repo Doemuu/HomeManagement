@@ -1,5 +1,6 @@
 ﻿using HomeManagement.Models;
 using HomeManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -21,6 +22,7 @@ namespace HomeManagement.Controllers
             _notesService = notesService;
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateNote([FromForm] NoteCreate model)
         {
@@ -31,6 +33,7 @@ namespace HomeManagement.Controllers
             return Json(result);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetNote(int id)
         {
@@ -40,6 +43,8 @@ namespace HomeManagement.Controllers
 
             return Json(result);
         }
+
+        [Authorize]
         [HttpGet("{id}/file")]
         public async Task<IActionResult> GetNoteFileById(int id)
         {

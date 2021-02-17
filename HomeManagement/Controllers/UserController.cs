@@ -1,5 +1,6 @@
 ﻿using HomeManagement.Entities;
 using HomeManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace HomeManagement.Controllers
             _userService = userService;
         }
 
+        [Authorize]
         [HttpGet("{username}")]
         public async Task<IActionResult> GetUserData(string username)
         {
@@ -28,6 +30,7 @@ namespace HomeManagement.Controllers
             return Json(result);
         }
 
+        [Authorize]
         [HttpPut("/password")]
         public async Task<IActionResult> ChangePassword([FromBody] User user)
         {
@@ -38,6 +41,7 @@ namespace HomeManagement.Controllers
             return Json(result);
         }
 
+        [Authorize]
         [HttpPut("/userdata")]
         public async Task<IActionResult> EditUserData([FromBody] User user)
         {

@@ -1,5 +1,6 @@
 ﻿using HomeManagement.Entities;
 using HomeManagement.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace HomeManagement.Controllers
             _shoppingService = shoppingService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetShoppingList()
         {
@@ -29,6 +31,7 @@ namespace HomeManagement.Controllers
             return Json(result);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetShoppingItemById(int id)
         {
@@ -39,6 +42,8 @@ namespace HomeManagement.Controllers
 
             return Json(result);
         }
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddShoppingItemToShoppingList([FromBody] ShoppingItem item)
         {
@@ -49,6 +54,8 @@ namespace HomeManagement.Controllers
 
             return Json(result);
         }
+
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> EditShoppingItem(int id, [FromBody] ShoppingItem item)
         {
