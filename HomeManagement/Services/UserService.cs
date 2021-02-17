@@ -17,25 +17,23 @@ namespace HomeManagement.Services
             _databaseConnector = databaseConnector;
         }
 
-        public async Task<ConnectorResult> RegisterUser(User user)
+        public async Task<User> RegisterUser(RegisterUserRequest user)
         {
             if (user.FirstName.Length <= 0)
-                return new ConnectorResult { Success = false, Exception = "invalid_first_name" };
+                return null;
             if (user.LastName.Length <= 0)
-                return new ConnectorResult { Success = false, Exception = "invalid_last_name" };
+                return null;
             if (user.UserName.Length <= 0)
-                return new ConnectorResult { Success = false, Exception = "invalid_username" };
+                return null;
             if (user.UserPassword.Length < 8)
-                return new ConnectorResult { Success = false, Exception = "password_length" };
+                return null;
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(user.UserPassword);
             user.UserPassword = passwordHash;
 
             var result = await _databaseConnector.RegisterUser(user);
-            if (!result.Success)
-                return new ConnectorResult { Success = false, Exception = result.Exception };
 
-            return new ConnectorResult { Success = true };
+            return result;
         }
 
         public async Task<User> GetUserByUserName(string username)

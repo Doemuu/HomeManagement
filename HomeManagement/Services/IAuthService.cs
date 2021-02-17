@@ -1,4 +1,5 @@
-﻿using HomeManagement.Models;
+﻿using HomeManagement.Entities;
+using HomeManagement.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace HomeManagement.Services
     public interface IAuthService
     {
         public Task<AuthenticationResponse> Authenticate(AuthenticationRequest model);
+        public Task<AuthenticationResponse> RegisterUser(RegisterUserRequest user);
         public AuthenticationResponse RefreshToken(string token);
         public bool RevokeToken(string token);
     }

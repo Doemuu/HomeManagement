@@ -18,11 +18,13 @@ namespace HomeManagement.Services
     {
         private readonly AppSettings _appSettings;
         private readonly IDatabaseConnector _databaseConnector;
+        private readonly UserService _userService;
 
-        public AuthService(IOptions<AppSettings> appSettings, IDatabaseConnector databaseConnector)
+        public AuthService(IOptions<AppSettings> appSettings, IDatabaseConnector databaseConnector, UserService userService)
         {
             _appSettings = appSettings.Value;
             _databaseConnector = databaseConnector;
+            _userService = userService;
         }
 
         public async Task<AuthenticationResponse> Authenticate(AuthenticationRequest model)
@@ -40,10 +42,19 @@ namespace HomeManagement.Services
             var jwtToken = generateJwtToken(user);
             var refreshToken = generateRefreshToken(user).Result;
 
-            // save refresh token
-            await _databaseConnector.SaveRefreshToken(new RefreshToken { Token = refreshToken, IsRevoked = false, CreatedAt = DateTime.UtcNow});
-
             return new AuthenticationResponse(user, jwtToken, refreshToken);
+        }
+
+        public async Task<AuthenticationResponse> RegisterUser(RegisterUserRequest user)
+        {
+            var result = await _userService.RegisterUser(user);
+            if (result == null)
+                return null;
+
+            var jwtToken = generateJwtToken(result);
+            var refreshToken = generateRefreshToken(result).Result;
+
+            return new AuthenticationResponse(result, jwtToken, refreshToken);
         }
 
         public AuthenticationResponse RefreshToken(string token)

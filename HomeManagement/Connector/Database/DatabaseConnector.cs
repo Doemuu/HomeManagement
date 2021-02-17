@@ -152,29 +152,6 @@ namespace HomeManagement.Connector.Database
             }
         }
 
-        public async Task<ConnectorResult> SaveRefreshToken(RefreshToken token)
-        {
-            using (var sql = GetSqlConnection())
-            {
-                try
-                {
-                    var result = await sql.ExecuteAsync("UPDATE RefreshToken SET Token = @Token, IsRevoked = @IsRevoked, CreatedAt = @CreatedAt, UpdatedAt = @UpdatedAt",
-                        new
-                        {
-                            Token = token.Token,
-                            IsRevoked = token.IsRevoked,
-                            CreatedAt = token.CreatedAt,
-                            UpdatedAt = token.UpdatedAt
-                        });
-                    return new ConnectorResult { Success = true };
-                }
-                catch (Exception ex)
-                {
-                    return new ConnectorResult { Success = false, Exception = ex.Message };
-                }
-            }
-        }
-
         public async Task<User> GetUserByUserName(string UserName)
         {
             using (var sql = GetSqlConnection())
@@ -191,19 +168,19 @@ namespace HomeManagement.Connector.Database
             }
         }
 
-        public async Task<ConnectorResult> RegisterUser(User user)
+        public async Task<User> RegisterUser(RegisterUserRequest user)
         {
             using (var sql = GetSqlConnection())
             {
                 try
                 {
-                    var result = await sql.ExecuteAsync("INSERT INTO User (FirstName, LastName, UserName, UserPassword) VALUES (@FirstName, @LastName, @UserName, @UserPassword)",
+                    var result = await sql.QueryFirstOrDefaultAsync<User>("INSERT INTO User (FirstName, LastName, UserName, UserPassword) VALUES (@FirstName, @LastName, @UserName, @UserPassword)",
                         new { FirstName = user.FirstName, LastName = user.LastName, UserName = user.UserName, UserPassword = user.UserPassword });
-                    return new ConnectorResult { Success = true };
+                    return result;
                 }
                 catch (Exception ex)
                 {
-                    return new ConnectorResult { Success = false, Exception = ex.Message };
+                    return null;
                 }
             }
         }

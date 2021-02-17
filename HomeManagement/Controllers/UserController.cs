@@ -18,15 +18,6 @@ namespace HomeManagement.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Register([FromBody] User user)
-        {
-            var result = await _userService.RegisterUser(user);
-            if (!result.Success)
-                return BadRequest(result.Exception);
-
-            return Json(result);
-        }
         [HttpGet("{username}")]
         public async Task<IActionResult> GetUserData(string username)
         {
