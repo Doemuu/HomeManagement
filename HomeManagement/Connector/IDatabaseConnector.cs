@@ -17,10 +17,12 @@ namespace HomeManagement.Connector
         public Task<ConnectorResult> CreateNote(Note note);
         public Task<Note> GetNoteById(int id);
         public Task<User> GetUserByUserName(string UserName);
+        public Task<User> GetUserById(int id);
         public Task<User> RegisterUser(RegisterUserRequest user);
         public Task<ConnectorResult> EditPassword(string username, string password);
         public Task<ConnectorResult> EditUserData(string username, User user);
         public Task<ConnectorResult> GenerateRefreshToken(RefreshToken token);
-        public Task<RefreshToken> GetTokenByToken(string token);
+        public Task<RefreshToken> GetTokenById(int id);
+        public Task<ConnectorResult> RevokeToken(int id);
     }
 }

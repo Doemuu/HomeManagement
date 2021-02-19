@@ -28,6 +28,7 @@ namespace HomeManagement.Controllers
 
             return Json(result);
         }
+
         [HttpGet]
         public async Task<IActionResult> Login([FromBody] AuthenticationRequest model)
         {
@@ -36,6 +37,26 @@ namespace HomeManagement.Controllers
                 return BadRequest("invalid_entry");
 
             return Json(result);
+        }
+
+        [HttpGet("{token}/revoke")]
+        public async Task<IActionResult> RevokeToken(string token)
+        {
+            var result = await _authService.RevokeToken(token);
+            if (!result)
+                return BadRequest("invalid_token");
+
+            return Ok();
+        }
+
+        [HttpGet("{token}/refresh")]
+        public async Task<IActionResult> RefreshToken(string token)
+        {
+            var result = await _authService.RefreshToken(token);
+            if (result == null)
+                return BadRequest("invalid_token");
+
+            return Ok();
         }
     }
 }

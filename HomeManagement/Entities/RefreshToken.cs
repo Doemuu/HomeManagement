@@ -10,5 +10,6 @@ namespace HomeManagement.Entities
         public int Id { get; set; }
         public int UserId { get; set; }
         public DateTime ExpiresOn { get; set; }
+        public bool IsRevoked { get; set; }
     }
 }

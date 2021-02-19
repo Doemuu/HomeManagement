@@ -158,7 +158,7 @@ namespace HomeManagement.Connector.Database
             {
                 try
                 {
-                    var result = await sql.QueryFirstOrDefaultAsync<User>("SELECT * FROM User WHERE UserName = @UserName", new { UserName = UserName });
+                    var result = await sql.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE UserName = @UserName", new { UserName = UserName });
                     return result;
                 }
                 catch (Exception ex)
@@ -174,9 +174,14 @@ namespace HomeManagement.Connector.Database
             {
                 try
                 {
-                    var result = await sql.QueryFirstOrDefaultAsync<User>("INSERT INTO User (FirstName, LastName, UserName, UserPassword) VALUES (@FirstName, @LastName, @UserName, @UserPassword)",
+                    var returnUser = new User { FirstName = user.FirstName, LastName = user.LastName, UserName = user.UserName, UserPassword = user.UserPassword };
+
+                    var result = await sql.ExecuteScalarAsync<int>("INSERT INTO Users (FirstName, LastName, UserName, UserPassword) VALUES (@FirstName, @LastName, @UserName, @UserPassword);" +
+                        "SELECT LAST_INSERT_ID()",
                         new { FirstName = user.FirstName, LastName = user.LastName, UserName = user.UserName, UserPassword = user.UserPassword });
-                    return result;
+
+                    returnUser.Id = result;
+                    return returnUser;
                 }
                 catch (Exception ex)
                 {
@@ -191,7 +196,7 @@ namespace HomeManagement.Connector.Database
             {
                 try
                 {
-                    var result = await sql.ExecuteAsync("UPDATE User SET UserPassword = @UserPassword WHERE UserName = @UserName", new { UserPassword = password, UserName = username });
+                    var result = await sql.ExecuteAsync("UPDATE Users SET UserPassword = @UserPassword WHERE UserName = @UserName", new { UserPassword = password, UserName = username });
                     return new ConnectorResult { Success = true };
                 }
                 catch (Exception ex)
@@ -207,7 +212,7 @@ namespace HomeManagement.Connector.Database
             {
                 try
                 {
-                    var result = await sql.ExecuteAsync("UPDATE User SET FirstName = @FirstName, LastName = @LastName, UserName = @UserName",
+                    var result = await sql.ExecuteAsync("UPDATE Users SET FirstName = @FirstName, LastName = @LastName, UserName = @UserName",
                         new { FirstName = user.FirstName, LastName = user.LastName, UserName = user.UserName });
                     return new ConnectorResult { Success = true };
                 }
@@ -224,8 +229,9 @@ namespace HomeManagement.Connector.Database
             {
                 try
                 {
-                    var result = await sql.QuerySingleAsync<int>("INSERT INTO RefreshToken (UserId, ExpiresOn) VALUES" +
-                        " (@UserId @ExpiresOn)", 
+                    var result = await sql.ExecuteScalarAsync<int>("INSERT INTO RefreshToken (UserId, ExpiresOn) VALUES" +
+                        " (@UserId, @ExpiresOn);" +
+                        "SELECT LAST_INSERT_ID()", 
                         new { UserId = token.UserId, ExpiresOn = token.ExpiresOn});
 
                     return new ConnectorResult { Success = true, LastId = result };
@@ -237,18 +243,50 @@ namespace HomeManagement.Connector.Database
             }
         }
 
-        public async Task<RefreshToken> GetTokenByToken(string token)
+        public async Task<RefreshToken> GetTokenById(int id)
         {
             using (var sql = GetSqlConnection())
             {
                 try
                 {
-                    var result = await sql.QuerySingleOrDefaultAsync<RefreshToken>("SELECT * FROM RefreshToken WHERE Token = @Token", new { Token = token});
+                    var result = await sql.QuerySingleOrDefaultAsync<RefreshToken>("SELECT * FROM RefreshToken WHERE Id = @Id", new { Id = id});
                     return result;
                 }
                 catch (Exception ex)
                 {
                     return null;
+                }
+            }
+        }
+
+        public async Task<User> GetUserById(int id)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.QueryFirstOrDefaultAsync<User>("SELECT * FROM Users WHERE Id = @Id", new { Id = id });
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+        }
+
+        public async Task<ConnectorResult> RevokeToken(int id)
+        {
+            using (var sql = GetSqlConnection())
+            {
+                try
+                {
+                    var result = await sql.ExecuteAsync("UPDATE RefreshToken SET IsRevoked = true");
+                    return new ConnectorResult { Success = true };
+                }
+                catch (Exception ex)
+                {
+                    return new ConnectorResult { Success = false, Exception = ex.Message };
                 }
             }
         }

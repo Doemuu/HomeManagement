@@ -11,7 +11,7 @@ namespace HomeManagement.Services
     {
         public Task<AuthenticationResponse> Authenticate(AuthenticationRequest model);
         public Task<AuthenticationResponse> RegisterUser(RegisterUserRequest user);
-        public AuthenticationResponse RefreshToken(string token);
-        public bool RevokeToken(string token);
+        public Task<AuthenticationResponse> RefreshToken(string token);
+        public Task<bool> RevokeToken(string token);
     }
 }

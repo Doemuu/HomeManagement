@@ -31,7 +31,7 @@ namespace HomeManagement.Controllers
         }
 
         [Authorize]
-        [HttpPut("/password")]
+        [HttpPut("password")]
         public async Task<IActionResult> ChangePassword([FromBody] User user)
         {
             var result = await _userService.ChangePassword(user.UserName, user.UserPassword);
@@ -42,7 +42,7 @@ namespace HomeManagement.Controllers
         }
 
         [Authorize]
-        [HttpPut("/userdata")]
+        [HttpPut("userdata")]
         public async Task<IActionResult> EditUserData([FromBody] User user)
         {
             var result = await _userService.EditUserData(user);

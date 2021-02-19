@@ -57,14 +57,56 @@ namespace HomeManagement.Services
             return new AuthenticationResponse(result, jwtToken, refreshToken);
         }
 
-        public AuthenticationResponse RefreshToken(string token)
+        public async Task<AuthenticationResponse> RefreshToken(string token)
         {
-            throw new NotImplementedException();
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            var id = jwt.Claims.First(claim => claim.Type == ClaimTypes.Name).Value;
+            try
+            {
+                var intId = Int32.Parse(id);
+                var result = await _databaseConnector.GetTokenById(intId);
+                var comparison = DateTime.Compare(DateTime.UtcNow, result.ExpiresOn);
+                if (result.IsRevoked || comparison <= 0 || result == null)
+                    return null;
+
+                var user = await _databaseConnector.GetUserById(result.UserId);
+                if (user == null)
+                    return null;
+
+                var jwtToken = generateJwtToken(user);
+
+                return new AuthenticationResponse(user, jwtToken, token);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
-        public bool RevokeToken(string token)
+        public async Task<bool> RevokeToken(string token)
         {
-            throw new NotImplementedException();
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            var id = jwt.Claims.First(claim => claim.Type == ClaimTypes.Name).Value;
+            try
+            {
+                var intId = Int32.Parse(id);
+                var result = await _databaseConnector.GetTokenById(intId);
+                var comparison = DateTime.Compare(DateTime.UtcNow, result.ExpiresOn);
+                if (result.IsRevoked || comparison <= 0 || result == null)
+                    return false;
+
+                var revokeToken = await _databaseConnector.RevokeToken(intId);
+                if (!revokeToken.Success)
+                    return false;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         private string generateJwtToken(User user)
@@ -86,7 +128,7 @@ namespace HomeManagement.Services
 
         private async Task<string> generateRefreshToken(User user)
         {
-            var result = await _databaseConnector.GenerateRefreshToken(new RefreshToken { UserId = user.Id, ExpiresOn = DateTime.UtcNow});
+            var result = await _databaseConnector.GenerateRefreshToken(new RefreshToken { UserId = user.Id, ExpiresOn = DateTime.UtcNow.AddDays(7)});
             if (!result.Success)
                 return result.Exception;
 
