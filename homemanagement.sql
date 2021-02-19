@@ -25,6 +25,7 @@ Create table Users (
     LastName varchar(255) not null,
     UserName varchar(255) not null,
     UserPassword varchar(255) not null,
+    IsAdmin tinyint,
     Primary Key (Id)
 );
 Create table RefreshToken (

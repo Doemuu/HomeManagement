@@ -1,6 +1,7 @@
 using HomeManagement.Connector;
 using HomeManagement.Connector.Database;
 using HomeManagement.Entities;
+using HomeManagement.Middleware;
 using HomeManagement.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -98,13 +99,15 @@ namespace HomeManagement
             });
 
             app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseMiddleware<MAuthentication>();
+
             app.UseAuthorization();
+
 
             app.UseEndpoints(endpoints =>
             {

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace HomeManagement.Controllers
@@ -23,6 +24,10 @@ namespace HomeManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> GetShoppingList()
         {
+            var isAdmin = HttpContext.Items["user"].ToString();
+            if (isAdmin != "True")
+                return BadRequest("unauthorised_request");
+
             var result = await _shoppingService.GetShoppingList();
             
             if (result == null)

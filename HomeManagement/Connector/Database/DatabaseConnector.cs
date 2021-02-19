@@ -174,11 +174,11 @@ namespace HomeManagement.Connector.Database
             {
                 try
                 {
-                    var returnUser = new User { FirstName = user.FirstName, LastName = user.LastName, UserName = user.UserName, UserPassword = user.UserPassword };
+                    var returnUser = new User { FirstName = user.FirstName, LastName = user.LastName, UserName = user.UserName, UserPassword = user.UserPassword, IsAdmin = user.IsAdmin};
 
-                    var result = await sql.ExecuteScalarAsync<int>("INSERT INTO Users (FirstName, LastName, UserName, UserPassword) VALUES (@FirstName, @LastName, @UserName, @UserPassword);" +
+                    var result = await sql.ExecuteScalarAsync<int>("INSERT INTO Users (FirstName, LastName, UserName, UserPassword, IsAdmin) VALUES (@FirstName, @LastName, @UserName, @UserPassword, @IsAdmin);" +
                         "SELECT LAST_INSERT_ID()",
-                        new { FirstName = user.FirstName, LastName = user.LastName, UserName = user.UserName, UserPassword = user.UserPassword });
+                        new { FirstName = user.FirstName, LastName = user.LastName, UserName = user.UserName, UserPassword = user.UserPassword, IsAdmin = user.IsAdmin });
 
                     returnUser.Id = result;
                     return returnUser;

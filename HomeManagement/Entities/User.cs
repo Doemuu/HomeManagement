@@ -12,5 +12,6 @@ namespace HomeManagement.Entities
         public string LastName { get; set; }
         public string UserName { get; set; }
         public string UserPassword { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }
