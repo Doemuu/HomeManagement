@@ -21,9 +21,10 @@ namespace HomeManagement.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            var token = context.Request.Headers["Authorization"].FirstOrDefault();
             if (token != null)
             {
+                token = token.Split(" ").Last();
                 var handler = new JwtSecurityTokenHandler();
                 var jwt = handler.ReadJwtToken(token);
                 var id = jwt.Claims.First(claim => claim.Type == "abcId").Value;

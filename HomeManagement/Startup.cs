@@ -117,10 +117,9 @@ namespace HomeManagement
 
             app.UseRouting();
 
-            app.UseMiddleware<MAuthentication>();
-
             app.UseAuthorization();
 
+            app.UseMiddleware<MAuthentication>();
 
             app.UseEndpoints(endpoints =>
             {
