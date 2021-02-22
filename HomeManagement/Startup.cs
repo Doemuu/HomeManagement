@@ -73,6 +73,17 @@ namespace HomeManagement
 
             services.AddTransient<UserService>();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("MyPolicy",
+                                    builder =>
+                                    {
+                                        builder.AllowAnyOrigin()
+                                               .AllowAnyMethod()
+                                               .AllowAnyHeader();
+                                    });
+            });
+
             services.AddSwaggerGen(swagger =>
             {
                 swagger.SwaggerDoc("v1", new OpenApiInfo
@@ -90,6 +101,8 @@ namespace HomeManagement
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("MyPolicy");
 
             app.UseSwagger();
 
