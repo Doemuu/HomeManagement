@@ -29,7 +29,7 @@ namespace HomeManagement.Controllers
             return Json(result);
         }
 
-        [HttpGet]
+        [HttpPut]
         public async Task<IActionResult> Login([FromBody] AuthenticationRequest model)
         {
             var result = await _authService.Authenticate(model);
